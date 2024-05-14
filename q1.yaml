@@ -1,0 +1,164 @@
+
+
+a)
+version: '3.8'
+
+services:
+  product:
+    image: python:3.8-slim
+    volumes:
+      - ./product:/app
+    command: python /app/server.py
+    ports:
+      - "3000:3000"
+    depends_on:
+      - details
+      - reviews-v1
+      - reviews-v2
+      - reviews-v3
+
+  reviews-v1:
+    image: openjdk:11
+    volumes:
+      - ./reviews-v1:/app
+    command: java -jar /app/reviews.jar
+    ports:
+      - "3001:3001"
+    depends_on:
+      - ratings
+
+  reviews-v2:
+    image: openjdk:11
+    volumes:
+      - ./reviews-v2:/app
+    command: java -jar /app/reviews.jar
+    ports:
+      - "3002:3002"
+    depends_on:
+      - ratings
+
+  reviews-v3:
+    image: openjdk:11
+    volumes:
+      - ./reviews-v3:/app
+    command: java -jar /app/reviews.jar
+    ports:
+      - "3003:3003"
+    depends_on:
+      - ratings
+
+  ratings:
+    image: node:12-alpine
+    volumes:
+      - ./ratings:/app
+    command: node /app/server.js
+    ports:
+      - "3004:3004"
+
+  details:
+    image: ruby:2.7-slim
+    volumes:
+      - ./details:/app
+    command: ruby /app/server.rb
+    ports:
+      - "5005:5005"
+
+
+  locust:
+    image: locustio/locust
+    volumes:
+      - ./locust:/mnt/locust
+    command: "-f /mnt/locust/locustfile.py"
+    ports:
+      - "8089:8089"
+    environment:
+      - LOCUST_MODE=standalone
+
+b)
+
+version: '3.8'
+
+services:
+  product:
+    image: python:3.8-slim
+    volumes:
+      - ./product:/app
+    command: python /app/server.py
+    ports:
+      - "3000:3000"
+    depends_on:
+      - details
+      - reviews-v1
+      - reviews-v2
+      - reviews-v3
+
+  reviews-v1:
+    image: openjdk:11
+    volumes:
+      - ./reviews-v1:/app
+    command: java -jar /app/reviews.jar
+    ports:
+      - "3001:3001"
+    depends_on:
+      - ratings
+
+  reviews-v2:
+    image: openjdk:11
+    volumes:
+      - ./reviews-v2:/app
+    command: java -jar /app/reviews.jar
+    ports:
+      - "3002:3002"
+    depends_on:
+      - ratings
+
+  reviews-v3:
+    image: openjdk:11
+    volumes:
+      - ./reviews-v3:/app
+    command: java -jar /app/reviews.jar
+    ports:
+      - "3003:3003"
+    depends_on:
+      - ratings
+
+  ratings:
+    image: node:12-alpine
+    volumes:
+      - ./ratings:/app
+    command: node /app/server.js
+    ports:
+      - "3004:3004"
+
+  details:
+    image: ruby:2.7-slim
+    volumes:
+      - ./details:/app
+    command: ruby /app/server.rb
+    ports:
+      - "5005:5005"
+
+  locust:
+    image: locustio/locust
+    volumes:
+      - ./locust:/mnt/locust
+    command: "-f /mnt/locust/locustfile.py"
+    ports:
+      - "8089:8089"
+    environment:
+      - LOCUST_MODE=standalone
+
+
+c) Estratégia de avaliação de desempenho:
+Incluir o Locust como um serviço no Docker Compose pode ser uma 
+estratégia útil para avaliar o desempenho da aplicação durante o 
+desenvolvimento e testes. Isso permite que os testes de carga sejam 
+integrados facilmente no ambiente de desenvolvimento, permitindo uma 
+rápida iteração e ajustes conforme necessário. No entanto, é 
+importante notar que testes de carga em um ambiente local podem 
+não refletir completamente o comportamento da aplicação em produção, 
+onde fatores como escalabilidade, latência de rede e recursos do servidor 
+podem ter um impacto significativo no desempenho. Portanto, enquanto o 
+teste de carga local pode ser útil como parte de um processo de desenvolvimento 
+contínuo, é essencial complementá-lo com testes em um ambiente mais próximo do
+ ambiente de produção sempre que possível.
